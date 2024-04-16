@@ -16,10 +16,12 @@ struct IconView: View {
             Image(systemName: systemIcon)
                 .resizable()
                 .frame(width: 40, height: 40)
+                .foregroundStyle(.white)
             Text("\(count)")
+                .foregroundStyle(.white)
                 .background{
                     Circle()
-                        .fill(.white)
+                        .fill(.black)
                         .frame(width: 200)
                 }
                 .offset(x:24, y:-16)

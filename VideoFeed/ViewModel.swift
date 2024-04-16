@@ -2,17 +2,19 @@ import Foundation
 
 struct ViewModel {
 
-    var videos: DataModel?
     var currentVideoId: Int = 0
     var currentVideoData: Look?
+    var videos: DataModel? {
+        didSet {
+            if let videos = videos {
+                    currentVideoData = videos.looks[currentVideoId]
+                }
+            }
+        }
+
 
     init() {
         loadItemsFromJSONFile()
-        if let videos = self.videos {
-            currentVideoData = videos.looks[0]
-        } else {
-            return
-        }
     }
 
     mutating func loadItemsFromJSONFile() {
@@ -28,5 +30,17 @@ struct ViewModel {
         }
     }
 
-    
+    mutating func increaseHeartCount() {
+        if var videos = videos {
+            videos.looks[currentVideoId].heartReactions += 1
+            self.videos = videos
+        }
+    }
+
+    mutating func increaseFlameCount() {
+        if var videos = videos {
+            videos.looks[currentVideoId].flameReactions += 1
+            self.videos = videos
+        }
+    }
 }

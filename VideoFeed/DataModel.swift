@@ -1,7 +1,7 @@
 import Foundation
 
 struct DataModel: Codable {
-    let looks: [Look]
+    var looks: [Look]
 }
 
 struct Look: Codable, Equatable {
@@ -12,7 +12,7 @@ struct Look: Codable, Equatable {
     let username: String
     let compressedForIOSURL: URL
     var heartReactions: Int = 0
-    var fireReactions: Int = 0
+    var flameReactions: Int = 0
 
     enum CodingKeys: String, CodingKey {
         case id

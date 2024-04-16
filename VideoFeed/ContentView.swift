@@ -1,11 +1,15 @@
 import SwiftUI
 
 struct ContentView: View {
-    var viewModel = ViewModel()
+    @State var viewModel = ViewModel()
+    @State var offsetX: CGFloat = 0
+    @State var offsetY: CGFloat = 0
+    @State var showHeart = true
+    @State var showFlame = true
 
     var body: some View {
         ZStack {
-            VStack() {
+            VStack {
                 HStack {
                     AsyncImage(url: viewModel.currentVideoData?.profilePictureURL) { image in
                         image.resizable()
@@ -33,12 +37,6 @@ struct ContentView: View {
                         .opacity(0.6)
                 }
                 Spacer()
-                HStack {
-                    IconView(systemIcon: "heart.fill", count: viewModel.currentVideoData?.heartReactions ?? 0)
-                    Spacer()
-                    IconView(systemIcon: "flame.fill", count: viewModel.currentVideoData?.fireReactions ?? 0)
-                }
-                Spacer()
             }
             .padding()
             .background {
@@ -46,6 +44,74 @@ struct ContentView: View {
                     .ignoresSafeArea(edges: [.bottom, .horizontal, .top])
                     .scaledToFill()
             }
+            .offset(x: offsetX, y: offsetY)
+            .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                .onChanged({ value in
+                    withAnimation {
+                        if abs(value.translation.width) > abs(value.translation.height) {
+                            offsetX = value.translation.width
+                            if value.translation.width < 0 {
+                                showHeart = false
+                                showFlame = true
+                            } else {
+                                showHeart = true
+                                showFlame = false
+                            }
+                        } else {
+                            offsetY = value.translation.height
+                            withAnimation {
+                                showHeart = false
+                                showFlame = false
+                            }
+                        }
+                    }
+                })
+                .onEnded({ value in
+                    if abs(value.translation.width) > abs(value.translation.height) {
+                        if value.translation.width < 0 {
+                            viewModel.increaseFlameCount()
+                        }
+
+                        if value.translation.width > 0 {
+                            viewModel.increaseHeartCount()
+                        }
+                    } else {
+                        if value.translation.height < 0 {
+                            // up
+                        }
+
+                        if value.translation.height > 0 {
+                            // down
+                        }
+                    }
+                    withAnimation(.easeIn) {
+                        offsetX = 0
+                        offsetY = 0
+                        showHeart = true
+                        showFlame = true
+                    }
+                }))
+
+            VStack {
+                Spacer()
+                HStack {
+                    IconView(systemIcon: "heart.fill", count: viewModel.currentVideoData?.heartReactions ?? 0)
+                        .opacity(showHeart ? 1 : 0)
+                        .onTapGesture {
+                            viewModel.increaseHeartCount()
+                        }
+                    Spacer()
+                    IconView(systemIcon: "flame.fill", count: viewModel.currentVideoData?.flameReactions ?? 0)
+                        .opacity(showFlame ? 1 : 0)
+                        .onTapGesture {
+                            viewModel.increaseFlameCount()
+                        }
+                        .padding(.trailing)
+                }
+                Spacer()
+            }
+            .padding()
+
         }
         .background(.black)
     }

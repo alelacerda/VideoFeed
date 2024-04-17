@@ -3,8 +3,7 @@ import AVKit
 
 struct VideoPlayerView: View {
 
-    @State var data: Look
-
+    var data: Look
     @State private var videoPlayer: AVPlayer?
     @State private var audioPlayer = AVPlayer()
     @State private var videoPlayerObserver: Any?
@@ -13,6 +12,16 @@ struct VideoPlayerView: View {
         VideoPlayer(player: videoPlayer)
             .onAppear {
                 playNewVideo()
+            }
+            .onChange(of: data.compressedForIOSURL) {
+                let playerItem = AVPlayerItem(url: data.compressedForIOSURL)
+                let audioItem = AVPlayerItem(url: data.songURL)
+                videoPlayer?.replaceCurrentItem(with: playerItem)
+                audioPlayer.replaceCurrentItem(with: audioItem)
+                videoPlayer?.actionAtItemEnd = .none
+                videoPlayerObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { _ in
+                    resetAudioAndVideo()
+                }
             }
             .onDisappear {
                 videoPlayer?.pause()
@@ -35,13 +44,13 @@ struct VideoPlayerView: View {
         }
 
         videoPlayer?.play()
-//        audioPlayer.play()
+        audioPlayer.play()
     }
 
     private func resetAudioAndVideo() {
         videoPlayer?.seek(to: .zero)
         videoPlayer?.play()
         audioPlayer.seek(to: .zero)
-//        audioPlayer.play()
+        audioPlayer.play()
     }
 }

@@ -10,6 +10,7 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             VStack {
+                Spacer()
                 HStack {
                     AsyncImage(url: viewModel.currentVideoData?.profilePictureURL) { image in
                         image.resizable()
@@ -19,16 +20,16 @@ struct ContentView: View {
 
                     VStack(alignment: .leading){
                         Text(viewModel.currentVideoData?.username ?? "username")
-                            .font(.subheadline)
-                            .fontDesign(.rounded)
+                            .font(.system(size: 16, weight: .medium, design: .rounded))
                             .foregroundStyle(.white)
                         Text(viewModel.currentVideoData?.body ?? "caption")
-                            .font(.headline)
-                            .fontDesign(.rounded)
+                            .multilineTextAlignment(.leading)
+                            .font(.system(size: 20, weight: .regular, design: .rounded))
                             .foregroundStyle(.white)
                             .lineLimit(nil)
-                            .frame(width: 200)
                     }
+                    .frame(width: 200, alignment: .leading)
+                    Spacer()
                 }
                 .padding()
                 .background {
@@ -36,7 +37,6 @@ struct ContentView: View {
                         .foregroundStyle(.black)
                         .opacity(0.6)
                 }
-                Spacer()
             }
             .padding()
             .background {
@@ -77,14 +77,14 @@ struct ContentView: View {
                         }
                     } else {
                         if value.translation.height < 0 {
-                            // up
+                            viewModel.incrementVideoId()
                         }
 
                         if value.translation.height > 0 {
-                            // down
+                            viewModel.decrementVideoId()
                         }
                     }
-                    withAnimation(.easeIn) {
+                    withAnimation {
                         offsetX = 0
                         offsetY = 0
                         showHeart = true

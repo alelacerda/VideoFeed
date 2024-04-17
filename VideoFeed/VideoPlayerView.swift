@@ -2,7 +2,6 @@ import SwiftUI
 import AVKit
 
 struct VideoPlayerView: View {
-
     var data: Look
     @State private var videoPlayer: AVPlayer?
     @State private var audioPlayer = AVPlayer()
@@ -11,7 +10,16 @@ struct VideoPlayerView: View {
     var body: some View {
         VideoPlayer(player: videoPlayer)
             .onAppear {
-                playNewVideo()
+                let playerItem = AVPlayerItem(url: data.compressedForIOSURL)
+                let audioItem = AVPlayerItem(url: data.songURL)
+                audioPlayer = AVPlayer(playerItem: audioItem)
+                videoPlayer = AVPlayer(playerItem: playerItem)
+                videoPlayer?.actionAtItemEnd = .none
+                videoPlayerObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { _ in
+                    resetAudioAndVideo()
+                }
+                videoPlayer?.play()
+                audioPlayer.play()
             }
             .onChange(of: data.compressedForIOSURL) {
                 let playerItem = AVPlayerItem(url: data.compressedForIOSURL)
@@ -30,21 +38,6 @@ struct VideoPlayerView: View {
                     NotificationCenter.default.removeObserver(observer)
                 }
             }
-    }
-
-    private func playNewVideo() {
-        let playerItem = AVPlayerItem(url: data.compressedForIOSURL)
-        let audioItem = AVPlayerItem(url: data.songURL)
-        audioPlayer = AVPlayer(playerItem: audioItem)
-        videoPlayer = AVPlayer(playerItem: playerItem)
-        videoPlayer?.actionAtItemEnd = .none
-
-        videoPlayerObserver = NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { _ in
-            resetAudioAndVideo()
-        }
-
-        videoPlayer?.play()
-        audioPlayer.play()
     }
 
     private func resetAudioAndVideo() {

@@ -40,9 +40,12 @@ struct ContentView: View {
             }
             .padding()
             .background {
-                VideoPlayerView(data: viewModel.currentVideoData!)
-                    .ignoresSafeArea(edges: [.bottom, .horizontal, .top])
-                    .scaledToFill()
+
+                if let currentVideoData = viewModel.currentVideoData {
+                    VideoPlayerView(data: currentVideoData)
+                        .ignoresSafeArea(edges: [.bottom, .horizontal, .top])
+                        .scaledToFill()
+                }
             }
             .offset(x: offsetX, y: offsetY)
             .gesture(DragGesture(minimumDistance: 0, coordinateSpace: .local)

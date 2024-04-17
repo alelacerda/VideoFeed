@@ -1,7 +1,6 @@
 import Foundation
 
 struct ViewModel {
-
     var currentVideoData: Look?
     var currentVideoId: Int = 0 {
         didSet {
